@@ -1,0 +1,24 @@
+{
+    "typescript.format.enable": false,
+    "files.associations": {
+        "*.html": "html"
+    },
+    "trailing-spaces.trimOnSave": true,
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "prettier.singleQuote": true,
+    "prettier.eslintIntegration": true,
+    "prettier.tabWidth": 4,
+    "prettier.printWidth": 100,
+    "editor.rulers": [180],
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.check.npmIsInstalled": false,
+    "eslint.packageManager": "yarn",
+    "eslint.options": {
+        "extensions": [".html", ".js", ".vue", ".jsx"]
+    },
+    "eslint.validate": ["javascript", "javascriptreact", "html", "vue"],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+}

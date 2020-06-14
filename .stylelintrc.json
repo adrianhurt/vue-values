@@ -1,0 +1,18 @@
+{
+	"extends": "stylelint-config-recommended-scss",
+	"rules": {
+		"selector-pseudo-class-no-unknown": [
+			true,
+			{
+				"ignorePseudoClasses": ["global"]
+			}
+		],
+		"no-descending-specificity": null,
+		"selector-pseudo-element-no-unknown": [
+			true,
+			{
+				"ignorePseudoElements": ["v-deep"]
+			}
+		]
+	}
+}
