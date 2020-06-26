@@ -6,7 +6,7 @@ module.exports = {
         node: true,
     },
 
-    extends: ['eslint:recommended', 'airbnb-base', 'plugin:vue/recommended', 'plugin:vue-types/strongly-recommended'],
+    extends: ['eslint:recommended', 'airbnb-base', 'plugin:vue/recommended'],
     plugins: ['babel'],
 
     globals: {

@@ -1,45 +1,36 @@
-# @adrianhurt/package-vue-canvas
+# vue-values
 
-A simple template for a VueJs package with:
+A set of simple components to handle simple values.
 
--   [Prettier](https://prettier.io)
--   [ESLint](https://eslint.org)
--   [Airbnb Style Guide](https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb)
--   [Jest](https://jestjs.io)
--   [Husky](https://github.com/typicode/husky) for git hooks
--   [Commitlint](https://commitlint.js.org) (to ensure [Conventional Commits](https://www.conventionalcommits.org))
+# Documentation
+
+Please, check the [documentation page here](https://adrianhurt.github.io/vue-values/).
 
 ## Install
 
 ```
-$ npm install @adrianhurt/package-vue-canvas
+yarn add vue-values
 ```
-
 or
-
 ```
-$ yarn add @adrianhurt/package-vue-canvas
+npm install vue-values --save
 ```
 
-## Usage
+And that's all! Here you have a simple usage example.
 
-```js
+```vue
 <template>
-    <div id="app">
-        <SlipperyButton />
-    </div>
+    <Value #default="{ value, set }">
+        ...
+    </Value>
 </template>
 
 <script>
-import SlipperyButton from '@adrianhurt/package-vue-canvas'
+import { Value } from 'vue-values'
 
 export default {
-    name: 'App',
-    components: { SlipperyButton },
+    name: 'ValueExample',
+    components: { Value },
 }
 </script>
-
-<style lang="scss">
-@import '~@adrianhurt/package-vue-canvas/dist/package-vue-canvas.css';
-</style>
 ```
