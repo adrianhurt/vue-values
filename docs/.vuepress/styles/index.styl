@@ -1,0 +1,35 @@
+/**
+ * Custom Styles here.
+ *
+ * ref：https://v1.vuepress.vuejs.org/config/#index-styl
+ */
+
+.home .hero img {
+	max-width: 450px !important
+}
+
+.demo {
+	margin: 1rem 0;
+	padding: 1rem 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+
+	&-with-actions {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		.demo-actions {
+			display: flex;
+			align-items: center;
+			margin-left: 50px;
+			a {
+				font-size: 14px;
+				cursor: pointer;
+				& + a {
+					margin-left: 25px;
+				}
+			}
+		}
+	}
+}
+

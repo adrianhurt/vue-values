@@ -1,73 +1,26 @@
 {
-    "name": "@adrianhurt/package-vue-canvas",
-    "version": "0.1.0",
-    "private": true,
-    "description": "A canvas for a simple Vue package",
-    "author": "adrianhurt",
-    "license": "MIT",
-    "keywords": [
-        "package",
-        "vue",
-        "vuejs",
-        "canvas"
-    ],
-    "homepage": "https://github.com/adrianhurt/package-vue-canvas",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/adrianhurt/package-vue-canvas"
-    },
-    "main": "./dist/package-vue-canvas.common.js",
-    "scripts": {
-        "clean": "rm -rf dist",
-        "clearAll": "yarn clean && rm -rf node_modules",
-        "reinstall": "yarn clearAll && yarn install",
-        "test:unit": "vue-cli-service test:unit",
-        "test:clear": "vue-cli-service test:unit --clearCache",
-        "lint": "vue-cli-service lint",
-        "stylelint": "node_modules/stylelint/bin/stylelint.js ./src --formatter verbose",
-        "validate": "yarn test:unit && yarn lint && yarn stylelint",
-        "prebuild": "yarn clean",
-        "build": "vue-cli-service build --target lib --name package-vue-canvas src/main.js",
-        "dist": "yarn validate && yarn build",
-        "prepublishOnly": "yarn dist"
-    },
-    "gitHooks": {
-        "commit-msg": "commitlint -e -V",
-        "pre-commit": "yarn validate"
-    },
-    "files": [
-        "dist"
-    ],
-    "devDependencies": {
-        "@commitlint/cli": "^8.3.5",
-        "@commitlint/config-conventional": "^8.3.4",
-        "@vue/babel-preset-app": "^4.3.1",
-        "@vue/cli-plugin-babel": "^4.3.1",
-        "@vue/cli-plugin-eslint": "^4.3.1",
-        "@vue/cli-plugin-unit-jest": "^4.3.1",
-        "@vue/cli-service": "^4.3.1",
-        "@vue/eslint-config-airbnb": "^5.0.2",
-        "@vue/eslint-config-standard": "^5.1.2",
-        "@vue/test-utils": "^1.0.2",
-        "babel-eslint": "^10.1.0",
-        "babel-jest": "^26.0.1",
-        "core-js": "^3.6.5",
-        "eslint": "^7.0.0",
-        "eslint-config-airbnb-base": "^14.1.0",
-        "eslint-plugin-babel": "^5.3.0",
-        "eslint-plugin-vue": "^6.2.2",
-        "eslint-plugin-vue-types": "^1.0.1",
-        "node-sass": "^4.14.1",
-        "sass-loader": "^8.0.2",
-        "stylelint": "^13.3.3",
-        "stylelint-config-recommended": "^3.0.0",
-        "stylelint-config-recommended-scss": "^4.2.0",
-        "stylelint-scss": "^3.17.2",
-        "stylelint-webpack-plugin": "^2.0.0",
-        "vue": "^2.6.11",
-        "vue-template-compiler": "^2.6.11"
-    },
-    "dependencies": {
-        "vue-types": "^1.7.0"
-    }
+  "name": "vue-values-docs",
+  "version": "0.0.1",
+  "description": "A set of simple components to handle simple values.",
+  "main": "index.js",
+  "authors": {
+    "name": "Adrian Hurtado",
+    "email": "adrianhurt@gmail.com"
+  },
+  "repository": "adrianhurt/vue-values",
+  "scripts": {
+    "serve": "vuepress dev docs",
+    "build": "vuepress build docs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@vuepress/plugin-back-to-top": "^1.3.1",
+    "@vuepress/plugin-medium-zoom": "^1.3.1",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "vuepress": "^1.3.1"
+  },
+  "dependencies": {
+    "vue-values": "^0.1.0"
+  }
 }
