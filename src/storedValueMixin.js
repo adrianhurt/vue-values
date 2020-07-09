@@ -1,4 +1,4 @@
-import commonValueMixin from './commonValueMixin'
+import commonValueMixin, { firstDefined } from './commonValueMixin'
 import VueValuesStore from './store'
 
 export default (valueType, emptyValue = undefined, functionsDeclarations = {}) => ({
@@ -12,7 +12,7 @@ export default (valueType, emptyValue = undefined, functionsDeclarations = {}) =
     computed: {
         value: {
             get () {
-                return VueValuesStore.value.get(this.uid, this.cascadeOr(this.initialValue, this.defaultValue, emptyValue))
+                return VueValuesStore.value.get(this.uid, firstDefined(this.initialValue, this.defaultValue, emptyValue))
             },
             set (newValue) {
                 VueValuesStore.value.set(this.uid, newValue)
@@ -35,7 +35,7 @@ export default (valueType, emptyValue = undefined, functionsDeclarations = {}) =
             }
         },
         reset () {
-            const value = this.cascadeOr(this.defaultValue, this.initialValue)
+            const value = firstDefined(this.defaultValue, this.initialValue)
             if (value !== undefined) {
                 this.set(value)
             } else {

@@ -49,9 +49,6 @@ export default (valueType, emptyValue = undefined, functionsDeclarations = {}) =
         reset () {
             throw new Error('commonValueMixin: you must implement method "reset"')
         },
-        cascadeOr (...vals) {
-            return vals.find((v) => v !== undefined)
-        },
     },
     render () {
         return this.$scopedSlots.default({
@@ -61,3 +58,7 @@ export default (valueType, emptyValue = undefined, functionsDeclarations = {}) =
         })
     },
 })
+
+export function firstDefined (...vals) {
+    return vals.find((v) => v !== undefined)
+}

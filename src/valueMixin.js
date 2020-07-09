@@ -1,21 +1,21 @@
-import commonValueMixin from './commonValueMixin'
+import commonValueMixin, { firstDefined } from './commonValueMixin'
 
 export default (valueType, emptyValue = undefined, functionsDeclarations = {}) => ({
     mixins: [commonValueMixin(valueType, emptyValue, functionsDeclarations)],
     data () {
         return {
-            value: this.cascadeOr(this.initialValue, this.defaultValue, emptyValue),
+            value: firstDefined(this.initialValue, this.defaultValue, emptyValue),
         }
     },
     methods: {
         resetToDefault () {
-            this.set(this.cascadeOr(this.defaultValue, emptyValue))
+            this.set(firstDefined(this.defaultValue, emptyValue))
         },
         resetToInitial () {
-            this.set(this.cascadeOr(this.initialValue, emptyValue))
+            this.set(firstDefined(this.initialValue, emptyValue))
         },
         reset () {
-            this.set(this.cascadeOr(this.defaultValue, this.initialValue, emptyValue))
+            this.set(firstDefined(this.defaultValue, this.initialValue, emptyValue))
         },
     },
 })
