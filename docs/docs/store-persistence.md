@@ -21,7 +21,19 @@ If not, you will always set every _stored value_ with `undefined`.
 This function will be called (if it's defined) before every _stored value_ delete.
 
 ## Persisting the _value's store_
-Using `setUpdatingHandlers` together with `setState` you can easily persist your _stored values_.
+Using `setUpdatingHandlers` together with `setStates` (or `value.set`) you can easily persist your _stored values_.
+
+::: tip Note
+Note that this library is totally agnostic about your current persistence implementations or needs.
+So you can use these methods to persist your _stored values_  wherever you want and initialize them from wherever you need, like:
+* `localStorage`
+* `sessionStorage`
+* Cookies
+* **Your own server**
+* _(placeholder of what you need)_ 😃
+:::
+
+## Example: persisting into `localStorage`
 
 Here you have a very simple —and clumpsy— but complete example that allows us to persist those _stored values_ that are declared within the `VUE_VALUES_TO_PERSIST` object.
 
@@ -133,24 +145,21 @@ export default {
 </script>
 ```
 
-## Let's see another example
+## Example: reacting to changes
 
 Now we are going to implement a simple feature to save in _local storage_ some user's settings.
 
-```js {4,9,14,23-28}
+```js {3,7,11,20-25}
 // Declare here the default values for StoredValue components
 const VUE_VALUES_DEFAULT_STATE = {
-	'demo.persisted-counter': 1,
 	'demo.persisted-settings': { darkmode: true, newsletter: true, bigFontSize: false },
 }
 // Declare here the initial values for StoredValue components
 const VUE_VALUES_INITIAL_STATE = {
-	'demo.persisted-counter': 3,
 	'demo.persisted-settings': { darkmode: true, newsletter: true, bigFontSize: false },
 }
 // Declare here those stored values you want to persist in local storage
 const VUE_VALUES_TO_PERSIST = {
-	'demo.persisted-counter': true,
 	'demo.persisted-settings': true,
 }
 
@@ -210,6 +219,63 @@ export default {
 			{ key: 'bigFontSize', label: 'Bigger font size' },
 		]
 	}
+}
+</script>
+```
+
+## Example: accepting cookies
+
+That's probably my favorite one!
+
+First of all, be sure you are persisting your flag into `localStorage`:
+
+```js
+import VueValuesStore from 'vue-values'
+
+VueValuesStore.setDefaultValue('demo.persisted-accepted-cookies', false)
+const acceptedFromLocalStorage = ... // your own implementation
+VueValuesStore.value.set('demo.persisted-accepted-cookies', acceptedFromLocalStorage)
+
+VueValuesStore.setUpdatingHandlers({
+	onSet: (uid, value) => {
+		if (uid === 'demo.persisted-accepted-cookies') {
+			saveAcceptedIntoLocalStorage(value) // your own implementation
+		}
+		return value
+	},
+})
+```
+
+And you need a simple `StoredBooleanValue` component.
+
+<Demo-Cookies uid="demo.persisted-accepted-cookies" />
+
+```vue {2-5,7,9,12}
+<template>
+	<StoredBooleanValue
+		uid="demo.persisted-accepted-cookies"
+		#default="{ value: accepted, set }"
+	>
+		<transition name="cookie-transition">
+			<div v-if="!accepted" class="CookieAlert">
+				<p>The classic cookies alert message</p>
+				<button @click="set(true)">Accept</button>
+			</div>
+		</transition>
+	</StoredBooleanValue>
+</template>
+```
+
+Finally, for example, if you want to "auto-accept" the cookies when the user navigates through the app, you can do something like that
+
+```vue {5-7}
+<script>
+import VueValuesStore from 'vue-values'
+
+export default {
+	beforeRouteLeave (to, from, next) {
+		VueValuesStore.value.set('demo.persisted-accepted-cookies', true)
+	},
 }
 </script>
 ```

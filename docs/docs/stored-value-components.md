@@ -41,8 +41,15 @@ As an example, we can see here two synchronized (but uncoupled) `StoredNumberVal
 _This is an example:_
 <Demo-Counter uid="stored-values-demo-counter" :defaultValue="1" :initialValue="5" />
 
-_And this is an another uncoupled example. Indeed, it's another instance of the same component:_
+_And this is an another uncoupled example. Indeed, it's another instance of the same component._
 <Demo-Counter uid="stored-values-demo-counter" :defaultValue="1" :initialValue="5" />
+
+::: tip Note
+This two _stored values_ are placed together, but they are synchronized through your whole app,
+so they can be in different screens and they will maintain the same value.
+However, remember the _stored values_ are volatile, so if you reload the page you will lose them.
+If you need to persist them –in local storage, for example– check the section about [persistence](./store-persistence.md).
+:::
 
 These are two different instances for the following component declaration
 

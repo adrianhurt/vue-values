@@ -19,16 +19,19 @@ if (!storage) {
 const VUE_VALUES_DEFAULT_STATE = {
 	'demo.persisted-counter': 1,
 	'demo.persisted-settings': { darkmode: true, newsletter: true, bigFontSize: false },
+	'demo.persisted-accepted-cookies': false,
 }
 // Declare here the initial values for StoredValue components
 const VUE_VALUES_INITIAL_STATE = {
 	'demo.persisted-counter': 3,
 	'demo.persisted-settings': { darkmode: true, newsletter: true, bigFontSize: false },
+	'demo.persisted-accepted-cookies': false,
 }
 // Declare here those stored values you want to persist in local storage
 const VUE_VALUES_TO_PERSIST = {
 	'demo.persisted-counter': true,
 	'demo.persisted-settings': true,
+	'demo.persisted-accepted-cookies': true,
 }
 
 // Gets the whole store from the local storage
