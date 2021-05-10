@@ -12,8 +12,8 @@ export const storedValueProps = {
 
 export default function useValue (props, context, { emptyValue = undefined }) {
     const reactiveValue = computed({
-        get: () => VueValuesStore.value.get(props.uid, firstDefined(props.initialValue, props.defaultValue, emptyValue)),
-        set: (newValue) => VueValuesStore.value.set(props.uid, newValue),
+        get: () => VueValuesStore.value(props.uid).get(firstDefined(props.initialValue, props.defaultValue, emptyValue)),
+        set: (newValue) => VueValuesStore.value(props.uid).set(newValue),
     })
 
     const { functions, scopedProps } = useCommonValue(props, context, { reactiveValue }, { emptyValue })
@@ -23,14 +23,14 @@ export default function useValue (props, context, { emptyValue = undefined }) {
         if (props.defaultValue !== undefined) {
             set(props.defaultValue)
         } else {
-            VueValuesStore.value.resetToDefault(props.uid)
+            VueValuesStore.value(props.uid).resetToDefault()
         }
     }
     const resetToInitial = () => {
         if (props.initialValue !== undefined) {
             set(props.initialValue)
         } else {
-            VueValuesStore.value.resetToInitial(props.uid)
+            VueValuesStore.value(props.uid).resetToInitial()
         }
     }
     const reset = () => {
@@ -38,7 +38,7 @@ export default function useValue (props, context, { emptyValue = undefined }) {
         if (value !== undefined) {
             set(value)
         } else {
-            VueValuesStore.value.reset(props.uid)
+            VueValuesStore.value(props.uid).reset()
         }
     }
 

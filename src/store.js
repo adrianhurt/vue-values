@@ -138,18 +138,36 @@ function setUpdatingHandlers (options = {}) {
 // //////////////////////////
 // Auxiliar functions
 
-function applyFunctionsToStore (functionsDeclarations) {
-    return Object.keys(functionsDeclarations).reduce(
-        (acc, key) => ({
-            ...acc,
-            [key]: (uid, ...args) => set(uid, functionsDeclarations[key](get(uid), ...args)),
-        }),
-        {},
-    )
+function valueAs (type) {
+    return (uid) => {
+        const applyToUid = (fn) => (...args) => fn(uid, ...args)
+        const functionsDeclarations = type && type !== 'value' ? ValueFunctions[type] : {}
+        return {
+            get: applyToUid(get),
+            set: applyToUid(set),
+            resetToDefault: applyToUid(resetToDefault),
+            resetToInitial: applyToUid(resetToInitial),
+            reset: applyToUid(reset),
+            remove: applyToUid(remove),
+            ...Object.keys(functionsDeclarations).reduce(
+                (acc, key) => ({
+                    ...acc,
+                    [key]: (...args) => set(uid, functionsDeclarations[key](get(uid), ...args)),
+                }),
+                {},
+            ),
+        }
+    }
 }
 
 export default {
     state,
+    getValue: get,
+    setValue: set,
+    resetToDefault,
+    resetToInitial,
+    reset,
+    remove,
     setState,
     setDefaultState,
     setDefaultValue,
@@ -163,19 +181,12 @@ export default {
     resetAllToInitial,
     setUpdatingHandlers,
     removeAll,
-    value: {
-        get,
-        set,
-        resetToDefault,
-        resetToInitial,
-        reset,
-        remove,
-    },
-    boolean: applyFunctionsToStore(ValueFunctions.boolean),
-    number: applyFunctionsToStore(ValueFunctions.number),
-    string: applyFunctionsToStore(ValueFunctions.string),
-    array: applyFunctionsToStore(ValueFunctions.array),
-    set: applyFunctionsToStore(ValueFunctions.set),
-    object: applyFunctionsToStore(ValueFunctions.object),
-    map: applyFunctionsToStore(ValueFunctions.map),
+    value: valueAs('value'),
+    boolean: valueAs('boolean'),
+    number: valueAs('number'),
+    string: valueAs('string'),
+    array: valueAs('array'),
+    set: valueAs('set'),
+    object: valueAs('object'),
+    map: valueAs('map'),
 }
