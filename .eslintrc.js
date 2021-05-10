@@ -6,7 +6,7 @@ module.exports = {
         node: true,
     },
 
-    extends: ['eslint:recommended', 'airbnb-base', 'plugin:vue/recommended'],
+    extends: ['eslint:recommended', 'airbnb-base', 'plugin:vue/vue3-recommended'],
     plugins: ['babel'],
 
     globals: {
@@ -19,7 +19,6 @@ module.exports = {
         ecmaVersion: 2019,
         sourceType: 'module',
     },
-
 
     rules: {
         'no-unused-expressions': 'off',

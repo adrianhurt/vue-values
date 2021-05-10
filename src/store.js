@@ -1,7 +1,7 @@
-import Vue from 'vue'
+import { reactive } from 'vue'
 import ValueFunctions from './valueFunctions'
 
-const state = Vue.observable({})
+const state = reactive({})
 
 let defaultState = {}
 let initialState = {}
@@ -9,17 +9,19 @@ let initialState = {}
 let onSet
 let onDelete
 
+const hasOwnProperty = (...args) => Object.prototype.hasOwnProperty.call(...args)
+
 /**
  * Setter for a stored value
 */
 function set (uid, value) {
     if (uid) {
         const curatedValue = onSet ? onSet(uid, value) : value
-        if (Object.prototype.hasOwnProperty.call(state, uid)) {
-            state[uid] = curatedValue
-        } else {
-            Vue.set(state, uid, curatedValue)
-        }
+        // if (hasOwnProperty(state, uid)) {
+        state[uid] = curatedValue
+        // } else {
+        // Vue.set(state, uid, curatedValue)
+        // }
         return curatedValue
     }
     return value
@@ -39,7 +41,7 @@ function setState (newState) {
 */
 function get (uid, defaultValue) {
     if (uid) {
-        if (!Object.prototype.hasOwnProperty.call(state, uid)) {
+        if (!hasOwnProperty(state, uid)) {
             set(uid, defaultValue)
         }
         return state[uid]
@@ -51,8 +53,8 @@ function get (uid, defaultValue) {
  * Deletes a stored value
 */
 function remove (uid) {
-    Vue.delete(state, uid)
-	onDelete?.(uid)
+    delete state[uid]
+    onDelete?.(uid)
 }
 /**
  * Deletes every stored value
@@ -119,11 +121,10 @@ function resetAllToInitial () {
     })
 }
 
-
 // //////////////////////////
 // General reset (default or initial)
 function reset (uid) {
-    set(uid, Object.prototype.hasOwnProperty.call(defaultState, uid) ? defaultState[uid] : (initialState || {})[uid])
+    set(uid, hasOwnProperty(defaultState, uid) ? defaultState[uid] : (initialState || {})[uid])
 }
 
 // //////////////////////////
