@@ -307,6 +307,25 @@ testGeneralValue({
     bar: new Map([[3, 4]]),
 })
 
+describe('StoredValue with uid prepared for nested objects', () => {
+    const getUtilities = (props = {}) => getWrapperUtilities(StoredValue, props)
+    const emptyValue = undefined
+    const foo = 'foo'
+    const uid1 = 'myObject'
+    const uid2 = 'myValue'
+    const uid = `${uid1}.${uid2}`
+
+    it('Get and Set work correctly', async () => {
+        VueValuesStore.removeAll()
+        const { getAttrs } = getUtilities({ uid })
+        expect(getAttrs().value).toStrictEqual(emptyValue)
+        getAttrs().set(foo)
+        await nextTick()
+        expect(VueValuesStore.state[uid1][uid2]).toStrictEqual(foo)
+        expect(getAttrs().value).toStrictEqual(foo)
+    })
+})
+
 describe('NumberValue (specific)', () => {
     const getUtilities = (props = {}) => getWrapperUtilities(NumberValue, props)
 

@@ -1,68 +1,72 @@
 import { reactive } from 'vue'
 import ValueFunctions from './valueFunctions'
+import {
+    existsPathInObject,
+    getValueFromObject,
+    setValueIntoObject,
+    removeValueFromObject,
+    setReactiveValueIntoObject,
+    deepReactiveMerge,
+} from './utils'
 
 const state = reactive({})
 
 let defaultState = {}
 let initialState = {}
 
-let onSet
-let onDelete
-
-const hasOwnProperty = (...args) => Object.prototype.hasOwnProperty.call(...args)
+let afterSet
+let afterDelete
+let afterUpdate
 
 /**
- * Setter for a stored value
+ * Deletes a stored value
 */
-function set (uid, value) {
-    if (uid) {
-        const curatedValue = onSet ? onSet(uid, value) : value
-        // if (hasOwnProperty(state, uid)) {
-        state[uid] = curatedValue
-        // } else {
-        // Vue.set(state, uid, curatedValue)
-        // }
-        return curatedValue
-    }
-    return value
+function remove (uid, { notify = true } = {}) {
+    const result = removeValueFromObject(uid, state)
+    if (notify) afterDelete?.(uid)
+    if (notify) afterUpdate?.(state)
+    return result
+}
+/**
+ * Deletes every stored value
+*/
+function removeAll ({ notify = true } = {}) {
+    Object.keys(state).forEach((key) => {
+        remove(key, { notify: false })
+    })
+    if (notify) afterUpdate?.(state)
+}
+
+function mergeState (newState, { notify = true } = {}) {
+    deepReactiveMerge(state, newState)
+    if (notify) afterUpdate?.(state)
+    return state
 }
 
 /**
  * Sets every value found within newState
 */
-function setState (newState) {
-    Object.keys(newState).forEach((uid) => {
-        set(uid, newState[uid])
-    })
+function setState (newState, { notify = true } = {}) {
+    removeAll({ notify: false })
+    mergeState(newState, { notify: false })
+    if (notify) afterUpdate?.(state)
+}
+
+/**
+ * Setter for a stored value
+*/
+function set (uid, newValue, { notify = true } = {}) {
+    const result = setReactiveValueIntoObject(uid, state, newValue)
+    if (notify) afterSet?.(uid, newValue)
+    if (notify) afterUpdate?.(state)
+    return result
 }
 
 /**
  * Getter for a stored value
 */
 function get (uid, defaultValue) {
-    if (uid) {
-        if (!hasOwnProperty(state, uid)) {
-            set(uid, defaultValue)
-        }
-        return state[uid]
-    }
-    return defaultValue
-}
-
-/**
- * Deletes a stored value
-*/
-function remove (uid) {
-    delete state[uid]
-    onDelete?.(uid)
-}
-/**
- * Deletes every stored value
-*/
-function removeAll () {
-    Object.keys(state).forEach((uid) => {
-        remove(uid)
-    })
+    return getValueFromObject(uid, state, { defaultValue, isReactive: true })
 }
 
 // //////////////////////////
@@ -73,24 +77,22 @@ function setDefaultState (newDefaultState) {
 }
 
 function setDefaultValue (uid, newValue) {
-    defaultState[uid] = newValue
+    return setValueIntoObject(uid, defaultState, newValue)
 }
 function getDefaultValue (uid) {
-    return defaultState[uid]
+    return getValueFromObject(uid, defaultState)
 }
 
 function removeDefaultValue (uid) {
-    delete defaultState[uid]
+    return removeValueFromObject(uid, defaultState)
 }
 
 function resetToDefault (uid) {
-    set(uid, (defaultState || {})[uid])
+    set(uid, getDefaultValue(uid))
 }
 
 function resetAllToDefault () {
-    Object.keys(defaultState).forEach((uid) => {
-        resetToDefault(uid)
-    })
+    mergeState(defaultState)
 }
 
 // //////////////////////////
@@ -101,38 +103,37 @@ function setInitialState (newInitialState) {
 }
 
 function setInitialValue (uid, newValue) {
-    initialState[uid] = newValue
+    return setValueIntoObject(uid, initialState, newValue)
 }
 function getInitialValue (uid) {
-    return initialState[uid]
+    return getValueFromObject(uid, initialState)
 }
 
 function removeInitialValue (uid) {
-    delete initialState[uid]
+    return removeValueFromObject(uid, initialState)
 }
 
 function resetToInitial (uid) {
-    set(uid, (initialState || {})[uid])
+    set(uid, getInitialValue(uid))
 }
 
 function resetAllToInitial () {
-    Object.keys(initialState).forEach((uid) => {
-        resetToInitial(uid)
-    })
+    mergeState(initialState)
 }
 
 // //////////////////////////
 // General reset (default or initial)
 function reset (uid) {
-    set(uid, hasOwnProperty(defaultState, uid) ? defaultState[uid] : (initialState || {})[uid])
+    set(uid, existsPathInObject(defaultState, uid) ? getDefaultValue(uid) : getInitialValue(uid))
 }
 
 // //////////////////////////
-// Set update handlers (onSet and onDelete)
+// Set update handlers
 
 function setUpdatingHandlers (options = {}) {
-    onSet = options.onSet
-    onDelete = options.onDelete
+    afterSet = options.afterSet
+    afterDelete = options.afterDelete
+    afterUpdate = options.afterUpdate
 }
 
 // //////////////////////////

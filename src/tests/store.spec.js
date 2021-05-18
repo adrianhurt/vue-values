@@ -136,23 +136,21 @@ describe('store', () => {
         expect(VueValuesStore.state.myValue2).toBe('bar')
     })
 
-    it('setUpdatingHandlers: onSet and onDelete are called', () => {
-        const onSet = jest.fn()
-        const onDelete = jest.fn()
+    it('setUpdatingHandlers: afterSet, afterDelete and afterUpdate are called', () => {
+        const afterSet = jest.fn()
+        const afterDelete = jest.fn()
+        const afterUpdate = jest.fn()
         VueValuesStore.setDefaultState({ myValue: 'bar' })
-        VueValuesStore.setUpdatingHandlers({ onSet, onDelete })
+        VueValuesStore.setUpdatingHandlers({ afterSet, afterDelete, afterUpdate })
         VueValuesStore.value('myValue').set('foo')
-        expect(onSet).toHaveBeenCalledWith('myValue', 'foo')
+        expect(afterSet).toHaveBeenCalledWith('myValue', 'foo')
+        expect(afterUpdate).toHaveBeenCalledWith({ myValue: 'foo' })
         VueValuesStore.value('myValue').resetToDefault()
-        expect(onSet).toHaveBeenCalledWith('myValue', 'bar')
+        expect(afterSet).toHaveBeenCalledWith('myValue', 'bar')
+        expect(afterUpdate).toHaveBeenCalledWith({ myValue: 'bar' })
         VueValuesStore.value('myValue').remove()
-        expect(onDelete).toHaveBeenCalledWith('myValue')
-    })
-    it('setUpdatingHandlers: onSet controls the value is set', () => {
-        const onSet = () => 'bar'
-        VueValuesStore.setUpdatingHandlers({ onSet })
-        VueValuesStore.value('myValue').set('foo')
-        expect(VueValuesStore.state.myValue).toBe('bar')
+        expect(afterDelete).toHaveBeenCalledWith('myValue')
+        expect(afterUpdate).toHaveBeenCalledWith({})
     })
 
     it('boolean.toogle', () => {
