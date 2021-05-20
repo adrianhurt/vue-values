@@ -1,12 +1,11 @@
 import { reactive } from 'vue'
-import ValueFunctions from './valueFunctions'
+import ValueFunctions from '../valueFunctions/valueFunctions'
 import {
     existsPathInObject,
     getValueFromObject,
     setValueIntoObject,
     removeValueFromObject,
-    setReactiveValueIntoObject,
-    deepReactiveMerge,
+    deepMerge,
 } from './utils'
 
 const state = reactive({})
@@ -37,8 +36,11 @@ function removeAll ({ notify = true } = {}) {
     if (notify) afterUpdate?.(state)
 }
 
+/**
+ * Merges an object to the current state
+*/
 function mergeState (newState, { notify = true } = {}) {
-    deepReactiveMerge(state, newState)
+    deepMerge(state, newState)
     if (notify) afterUpdate?.(state)
     return state
 }
@@ -56,7 +58,7 @@ function setState (newState, { notify = true } = {}) {
  * Setter for a stored value
 */
 function set (uid, newValue, { notify = true } = {}) {
-    const result = setReactiveValueIntoObject(uid, state, newValue)
+    const result = setValueIntoObject(uid, state, newValue)
     if (notify) afterSet?.(uid, newValue)
     if (notify) afterUpdate?.(state)
     return result
@@ -66,7 +68,7 @@ function set (uid, newValue, { notify = true } = {}) {
  * Getter for a stored value
 */
 function get (uid, defaultValue) {
-    return getValueFromObject(uid, state, { defaultValue, isReactive: true })
+    return getValueFromObject(uid, state, { defaultValue })
 }
 
 // //////////////////////////
@@ -169,6 +171,7 @@ export default {
     resetToInitial,
     reset,
     remove,
+    mergeState,
     setState,
     setDefaultState,
     setDefaultValue,

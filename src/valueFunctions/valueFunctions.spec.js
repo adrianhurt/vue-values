@@ -1,4 +1,4 @@
-import ValueFunctions from '../valueFunctions'
+import ValueFunctions from './valueFunctions'
 
 describe('valueFunctions', () => {
     it('boolean.toggle', () => {

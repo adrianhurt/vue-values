@@ -1,6 +1,8 @@
 import { propsForValueType, emits } from './useCommonValue'
+import useVolatileValue from './useVolatileValue'
+import useStoredValue, { storedValueProps } from './useStoredValue'
 
-export default function componentGenerator ({
+export function singleComponentGenerator ({
     name,
     useValueFn,
     valueType,
@@ -34,4 +36,34 @@ export default function componentGenerator ({
             }
         },
     }
+}
+
+export function bothComponentGenerator ({
+    name,
+    useValueWrapperFn,
+    valueType,
+    emptyValue = undefined,
+    valueFunctions = {},
+    extraProps = {},
+    extraEmits = [],
+}) {
+    const volatile = singleComponentGenerator({
+        name,
+        useValueFn: useValueWrapperFn ? useValueWrapperFn(useVolatileValue) : useVolatileValue,
+        valueType,
+        emptyValue,
+        valueFunctions,
+        extraProps,
+        extraEmits,
+    })
+    const stored = singleComponentGenerator({
+        name: `Stored${name}`,
+        useValueFn: useValueWrapperFn ? useValueWrapperFn(useStoredValue) : useStoredValue,
+        valueType,
+        emptyValue,
+        valueFunctions,
+        extraProps: { ...storedValueProps, ...extraProps },
+        extraEmits,
+    })
+    return { volatile, stored }
 }

@@ -1,3 +1,10 @@
+/**
+ * Every "Value Function" must:
+ *  - to be a pure function
+ *  - to accept the original value as the first argument
+ *  - to return a new value of the same type than the original one
+ */
+
 export default {
     boolean: {
         toggle: (bool) => !bool,

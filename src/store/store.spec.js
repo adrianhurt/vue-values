@@ -1,4 +1,4 @@
-import VueValuesStore from '../store'
+import VueValuesStore from './store'
 
 beforeEach(() => {
     VueValuesStore.removeAll()

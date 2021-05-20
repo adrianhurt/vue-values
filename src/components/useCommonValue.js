@@ -18,29 +18,28 @@ export function propsForValueType (valueType) {
 }
 export const emits = ['change']
 
-export default function useCommonValue (props, context, { reactiveValue }, { emptyValue = undefined }) {
-    const set = (newValue) => {
-        if (newValue !== reactiveValue.value && !props.disabled) {
-            // eslint-disable-next-line no-param-reassign
-            reactiveValue.value = newValue
-        }
-        return newValue
-    }
-    const clear = () => set(emptyValue)
-
-    watch(() => reactiveValue.value, (newValue, oldValue) => {
+export default function useCommonValue (props, context, {
+    value,
+    set,
+    clear,
+    resetToDefault,
+    resetToInitial,
+    reset,
+}) {
+    watch(() => value.value, (newValue, oldValue) => {
         context.emit('change', newValue, oldValue)
     })
 
     return {
-        functions: {
-            set,
-            clear,
-        },
+        reactives: { value },
+        functions: { set, clear },
         scopedProps: {
             disabled: props.disabled,
             set,
             clear,
+            resetToDefault,
+            resetToInitial,
+            reset,
         },
     }
 }
