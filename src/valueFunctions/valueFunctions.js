@@ -10,8 +10,8 @@ export default {
         toggle: (bool) => !bool,
     },
     number: {
-        increment: (num, delta) => num + (typeof delta === 'number' ? delta : 1),
-        decrement: (num, delta) => num - (typeof delta === 'number' ? delta : 1),
+        increment: (num, delta = 1, max = Infinity) => Math.min(max, num + delta),
+        decrement: (num, delta = 1, min = -Infinity) => Math.max(min, num - delta),
     },
     string: {
         append: (string, str) => string + str,

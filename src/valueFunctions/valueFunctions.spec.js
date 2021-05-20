@@ -14,16 +14,20 @@ describe('valueFunctions', () => {
         const shouldBe2 = ValueFunctions.number.increment(num)
         expect(shouldBe2).toBe(2)
         expect(shouldBe2).not.toBe(num)
-        expect(ValueFunctions.number.increment(num, 2)).toBe(3)
-        expect(ValueFunctions.number.increment(num, -2)).toBe(-1)
+        expect(ValueFunctions.number.increment(num, 10)).toBe(11)
+        expect(ValueFunctions.number.increment(num, -10)).toBe(-9)
+        expect(ValueFunctions.number.increment(num, 10, 5)).toBe(5)
+        expect(ValueFunctions.number.increment(num, -10, 0)).toBe(-9)
     })
     it('number.decrement', () => {
         const num = 1
         const shouldBe0 = ValueFunctions.number.decrement(num)
         expect(shouldBe0).toBe(0)
         expect(shouldBe0).not.toBe(num)
-        expect(ValueFunctions.number.decrement(num, 2)).toBe(-1)
-        expect(ValueFunctions.number.decrement(num, -2)).toBe(3)
+        expect(ValueFunctions.number.decrement(num, 10)).toBe(-9)
+        expect(ValueFunctions.number.decrement(num, -10)).toBe(11)
+        expect(ValueFunctions.number.decrement(num, 10, 0)).toBe(0)
+        expect(ValueFunctions.number.decrement(num, -10, 0)).toBe(11)
     })
 
     it('string.append', () => {
