@@ -12,7 +12,7 @@ export const { volatile: Value, stored: StoredValue } = bothComponentGenerator({
 export const { volatile: BooleanValue, stored: StoredBooleanValue } = bothComponentGenerator({
     name: 'BooleanValue',
     valueType: Boolean,
-    emptyValue: undefined,
+    emptyValue: false,
     valueFunctions: ValueFunctions.boolean,
 })
 

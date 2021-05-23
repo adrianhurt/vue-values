@@ -12,11 +12,6 @@ export default function useStoredValue (props, context, { emptyValue = undefined
     return useCommonValue(
         props,
         context,
-        useCoreStoredValue(props.uid, {
-            initialValue: props.initialValue,
-            defaultValue: props.defaultValue,
-            reactiveDisabled: props.disabled,
-            emptyValue,
-        }),
+        useCoreStoredValue(props.uid, { ...props, emptyValue }),
     )
 }

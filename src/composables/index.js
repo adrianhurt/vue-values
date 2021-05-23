@@ -1,120 +1,41 @@
-import useCoreVolatileValue from './useCoreVolatileValue'
-import useCoreStoredValue from './useCoreStoredValue'
 import useCoreNumberValueFactory from './useCoreNumberValueFactory'
-import useCoreArrayValue from './useCoreArrayValue'
+import useCoreArrayValueFactory from './useCoreArrayValueFactory'
 import ValueFunctions from '../valueFunctions/valueFunctions'
+import { bothComposableGenerator } from './composableGenerator'
 
-function addFunctions (valueFunctions = {}) {
-    return (valueArgs) => {
-        const totalArgs = { ...valueArgs }
-        Object.keys(valueFunctions).forEach((key) => {
-            totalArgs[key] = (...args) => valueArgs.set(valueFunctions[key](valueArgs.value.value, ...args))
-        })
-        return totalArgs
-    }
-}
-function combine (valueResult, ...fns) {
-    return fns.reduce((result, fn) => ({ ...result, ...fn(result) }), valueResult)
-}
+export const { volatile: useVueValue, stored: useVueStoredValue } = bothComposableGenerator()
 
-export function useVueValue ({ initialValue, defaultValue } = {}) {
-    return useCoreVolatileValue({ initialValue, defaultValue, emptyValue: undefined })
-}
-export function useVueStoredValue (uid, { initialValue, defaultValue } = {}) {
-    return useCoreStoredValue(uid, { initialValue, defaultValue, emptyValue: undefined })
-}
+export const { volatile: useVueBoolean, stored: useVueStoredBoolean } = bothComposableGenerator({
+    emptyValue: false,
+    valueFunctions: ValueFunctions.boolean,
+})
 
-export function useVueBoolean ({ initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreVolatileValue({ initialValue, defaultValue, emptyValue: undefined }),
-        addFunctions(ValueFunctions.boolean),
-    )
-}
-export function useVueStoredBoolean (uid, { initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreStoredValue(uid, { initialValue, defaultValue, emptyValue: undefined }),
-        addFunctions(ValueFunctions.boolean),
-    )
-}
+export const { volatile: useVueNumber, stored: useVueStoredNumber } = bothComposableGenerator({
+    useValueFns: [useCoreNumberValueFactory],
+    valueFunctions: ValueFunctions.number,
+})
 
-export function useVueNumber ({ initialValue, defaultValue } = {}, props = {}) {
-    return combine(
-        useCoreVolatileValue({ initialValue, defaultValue, emptyValue: undefined }),
-        useCoreNumberValueFactory(props),
-        addFunctions(ValueFunctions.number),
-    )
-}
-export function useVueStoredNumber (uid, { initialValue, defaultValue } = {}, props = {}) {
-    return combine(
-        useCoreStoredValue(uid, { initialValue, defaultValue, emptyValue: undefined }),
-        useCoreNumberValueFactory(props),
-        addFunctions(ValueFunctions.number),
-    )
-}
+export const { volatile: useVueArray, stored: useVueStoredArray } = bothComposableGenerator({
+    useValueFns: [useCoreArrayValueFactory],
+    emptyValue: [],
+    valueFunctions: ValueFunctions.array,
+})
 
-export function useVueArray ({ initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreVolatileValue({ initialValue, defaultValue, emptyValue: [] }),
-        useCoreArrayValue,
-        addFunctions(ValueFunctions.array),
-    )
-}
-export function useVueStoredArray (uid, { initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreStoredValue(uid, { initialValue, defaultValue, emptyValue: [] }),
-        useCoreArrayValue,
-        addFunctions(ValueFunctions.array),
-    )
-}
+export const { volatile: useVueString, stored: useVueStoredString } = bothComposableGenerator({
+    valueFunctions: ValueFunctions.string,
+})
 
-export function useVueString ({ initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreVolatileValue({ initialValue, defaultValue, emptyValue: undefined }),
-        addFunctions(ValueFunctions.string),
-    )
-}
-export function useVueStoredString (uid, { initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreStoredValue(uid, { initialValue, defaultValue, emptyValue: undefined }),
-        addFunctions(ValueFunctions.string),
-    )
-}
+export const { volatile: useVueSet, stored: useVueStoredSet } = bothComposableGenerator({
+    emptyValue: new Set(),
+    valueFunctions: ValueFunctions.set,
+})
 
-export function useVueSet ({ initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreVolatileValue({ initialValue, defaultValue, emptyValue: new Set() }),
-        addFunctions(ValueFunctions.set),
-    )
-}
-export function useVueStoredSet (uid, { initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreStoredValue(uid, { initialValue, defaultValue, emptyValue: new Set() }),
-        addFunctions(ValueFunctions.set),
-    )
-}
+export const { volatile: useVueObject, stored: useVueStoredObject } = bothComposableGenerator({
+    emptyValue: {},
+    valueFunctions: ValueFunctions.object,
+})
 
-export function useVueObject ({ initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreVolatileValue({ initialValue, defaultValue, emptyValue: {} }),
-        addFunctions(ValueFunctions.object),
-    )
-}
-export function useVueStoredObject (uid, { initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreStoredValue(uid, { initialValue, defaultValue, emptyValue: {} }),
-        addFunctions(ValueFunctions.object),
-    )
-}
-
-export function useVueMap ({ initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreVolatileValue({ initialValue, defaultValue, emptyValue: new Map() }),
-        addFunctions(ValueFunctions.map),
-    )
-}
-export function useVueStoredMap (uid, { initialValue, defaultValue } = {}) {
-    return combine(
-        useCoreStoredValue(uid, { initialValue, defaultValue, emptyValue: new Map() }),
-        addFunctions(ValueFunctions.map),
-    )
-}
+export const { volatile: useVueMap, stored: useVueStoredMap } = bothComposableGenerator({
+    emptyValue: new Map(),
+    valueFunctions: ValueFunctions.map,
+})

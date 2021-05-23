@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
 
-export function firstDefined (...vals) {
-    return vals.find((v) => v !== undefined)
+export function existsFieldInObject (obj, fieldName) {
+    return Object.prototype.hasOwnProperty.call(obj, fieldName)
 }

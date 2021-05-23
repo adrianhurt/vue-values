@@ -1,39 +1,43 @@
 /* eslint-disable import/prefer-default-export */
 import { computed } from 'vue'
 import useCoreCommonValue from './useCoreCommonValue'
-import VueValuesStore from '../store/store'
-import { firstDefined } from '../utils'
+import Store from '../store/store'
+import { firstDefined } from './utils'
+import { existsFieldInObject } from '../utils'
 
-export default function useCoreStoredValue (uid, {
-    initialValue, defaultValue, reactiveDisabled = false, emptyValue,
-} = {}) {
+export default function useCoreStoredValue (uid, options = {}) {
+    const { disabled = false, emptyValue } = options
+
+    const initialOrDefaultValue = firstDefined(options, 'initialValue', 'defaultValue', 'emptyValue')
+
     const reactiveValue = computed({
-        get: () => VueValuesStore.value(uid).get(firstDefined(initialValue, defaultValue, emptyValue)),
-        set: (newValue) => VueValuesStore.value(uid).set(newValue),
+        get: () => Store.value(uid).get(initialOrDefaultValue),
+        set: (newValue) => Store.value(uid).set(newValue),
     })
 
-    const { set, clear } = useCoreCommonValue(reactiveValue, { reactiveDisabled, emptyValue })
+    const { set, clear } = useCoreCommonValue(reactiveValue, { disabled, emptyValue })
 
     const resetToDefault = () => {
-        if (defaultValue !== undefined) {
-            set(defaultValue)
+        if (existsFieldInObject(options, 'defaultValue')) {
+            set(options.defaultValue)
         } else {
-            VueValuesStore.value(uid).resetToDefault()
+            Store.value(uid).resetToDefault(emptyValue)
         }
     }
     const resetToInitial = () => {
-        if (initialValue !== undefined) {
-            set(initialValue)
+        if (existsFieldInObject(options, 'initialValue')) {
+            set(options.initialValue)
         } else {
-            VueValuesStore.value(uid).resetToInitial()
+            Store.value(uid).resetToInitial(emptyValue)
         }
     }
     const reset = () => {
-        const value = firstDefined(defaultValue, initialValue)
-        if (value !== undefined) {
-            set(value)
+        if (existsFieldInObject(options, 'defaultValue')) {
+            set(options.defaultValue)
+        } else if (existsFieldInObject(options, 'initialValue')) {
+            set(options.initialValue)
         } else {
-            VueValuesStore.value(uid).reset()
+            Store.value(uid).reset(emptyValue)
         }
     }
 

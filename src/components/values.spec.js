@@ -1,6 +1,7 @@
 import { h, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
-import VueValuesStore, {
+import Store from '../store'
+import {
     Value,
     BooleanValue,
     NumberValue,
@@ -17,7 +18,7 @@ import VueValuesStore, {
     StoredSetValue,
     StoredObjectValue,
     StoredMapValue,
-} from '../main'
+} from './index'
 
 const Tester = {
     name: 'Tester',
@@ -40,9 +41,9 @@ const getWrapperUtilities = (...args) => {
 }
 
 beforeEach(() => {
-    VueValuesStore.removeAll()
-    VueValuesStore.setDefaultState()
-    VueValuesStore.setInitialState()
+    Store.removeAll()
+    Store.setDefaultState()
+    Store.setInitialState()
 })
 
 function testGeneralValue ({
@@ -81,11 +82,11 @@ function testGeneralValue ({
 
     describe(`${componentName} (basics)`, () => {
         it('It renders correctly', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             expect(getWrapper(Component, customProps).findAllComponents(Tester)).toHaveLength(1)
         })
         it('Get and Set work correctly', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities()
             expect(getAttrs().value).toStrictEqual(emptyValue)
             getAttrs().set(foo)
@@ -93,36 +94,36 @@ function testGeneralValue ({
             expect(getAttrs().value).toStrictEqual(foo)
         })
         it('change event is emitted', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { wrapper, getAttrs } = getUtilities({ initialValue: foo })
             getAttrs().set(bar)
             await nextTick()
             expect(wrapper.emitted('change')[0]).toEqual([bar, foo])
         })
         it('change event not emitted for same value', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { wrapper, getAttrs } = getUtilities({ initialValue: foo })
             getAttrs().set(foo)
             await nextTick()
             expect(wrapper.emitted('change')).toBe(undefined)
         })
         it('Initializes with defaultValue', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ defaultValue: foo })
             expect(getAttrs().value).toStrictEqual(foo)
         })
         it('Initializes with initialValue', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ initialValue: foo })
             expect(getAttrs().value).toStrictEqual(foo)
         })
         it('Initializes with initialValue if defaultValue is present', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ initialValue: foo, defaultValue: bar })
             expect(getAttrs().value).toStrictEqual(foo)
         })
         it('Clear works correctly', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ initialValue: foo })
             expect(getAttrs().value).toStrictEqual(foo)
             getAttrs().clear()
@@ -130,7 +131,7 @@ function testGeneralValue ({
             expect(getAttrs().value).toStrictEqual(emptyValue)
         })
         it('ResetToDefault works correctly', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ initialValue: foo, defaultValue: bar })
             expect(getAttrs().value).toStrictEqual(foo)
             getAttrs().resetToDefault()
@@ -138,7 +139,7 @@ function testGeneralValue ({
             expect(getAttrs().value).toStrictEqual(bar)
         })
         it('ResetToInitial works correctly', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ initialValue: foo })
             getAttrs().set(bar)
             await nextTick()
@@ -148,7 +149,7 @@ function testGeneralValue ({
             expect(getAttrs().value).toStrictEqual(foo)
         })
         it('Reset set to default', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ initialValue: foo, defaultValue: bar })
             expect(getAttrs().value).toStrictEqual(foo)
             getAttrs().reset()
@@ -156,7 +157,7 @@ function testGeneralValue ({
             expect(getAttrs().value).toStrictEqual(bar)
         })
         it('Reset set to initial if default is not present', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ initialValue: foo })
             getAttrs().set(bar)
             await nextTick()
@@ -178,67 +179,67 @@ function testGeneralValue ({
         }
         if (isStoredValue) {
             it('Initializes with defaultValue from store', async () => {
-                VueValuesStore.removeAll()
-                VueValuesStore.value(uid).set(foo)
+                Store.removeAll()
+                Store.value(uid).set(foo)
                 const { getAttrs } = getUtilities()
                 expect(getAttrs().value).toStrictEqual(foo)
             })
             it('Value is persisted into store', async () => {
-                VueValuesStore.removeAll()
-                expect(VueValuesStore.state[uid]).toStrictEqual(undefined)
+                Store.removeAll()
+                expect(Store.state[uid]).toStrictEqual(undefined)
                 const { getAttrs } = getUtilities({ defaultValue: foo })
-                expect(VueValuesStore.state[uid]).toStrictEqual(foo)
+                expect(Store.state[uid]).toStrictEqual(foo)
                 getAttrs().set(bar)
-                expect(VueValuesStore.state[uid]).toStrictEqual(bar)
+                expect(Store.state[uid]).toStrictEqual(bar)
             })
             it('ResetToDefault from store', async () => {
-                VueValuesStore.removeAll()
-                VueValuesStore.setDefaultValue(uid, foo)
+                Store.removeAll()
+                Store.setDefaultValue(uid, foo)
                 const { getAttrs } = getUtilities()
                 expect(getAttrs().value).toStrictEqual(emptyValue)
-                VueValuesStore.value(uid).resetToDefault()
+                Store.value(uid).resetToDefault()
                 await nextTick()
                 expect(getAttrs().value).toStrictEqual(foo)
             })
             it('ResetToInitial from store', async () => {
-                VueValuesStore.removeAll()
-                VueValuesStore.setInitialValue(uid, foo)
+                Store.removeAll()
+                Store.setInitialValue(uid, foo)
                 const { getAttrs } = getUtilities()
                 expect(getAttrs().value).toStrictEqual(emptyValue)
-                VueValuesStore.value(uid).resetToInitial()
+                Store.value(uid).resetToInitial()
                 await nextTick()
                 expect(getAttrs().value).toStrictEqual(foo)
             })
             it('Reset to default (prior to initial) from store', async () => {
-                VueValuesStore.removeAll()
-                VueValuesStore.setDefaultValue(uid, foo)
-                VueValuesStore.setInitialValue(uid, bar)
+                Store.removeAll()
+                Store.setDefaultValue(uid, foo)
+                Store.setInitialValue(uid, bar)
                 const { getAttrs } = getUtilities()
                 expect(getAttrs().value).toStrictEqual(emptyValue)
-                VueValuesStore.value(uid).reset()
+                Store.value(uid).reset()
                 await nextTick()
                 expect(getAttrs().value).toStrictEqual(foo)
             })
             it('Reset to initial (if default is not present) from store', async () => {
-                VueValuesStore.removeAll()
-                VueValuesStore.setInitialValue(uid, bar)
+                Store.removeAll()
+                Store.setInitialValue(uid, bar)
                 const { getAttrs } = getUtilities()
                 expect(getAttrs().value).toStrictEqual(emptyValue)
-                VueValuesStore.value(uid).reset()
+                Store.value(uid).reset()
                 await nextTick()
                 expect(getAttrs().value).toStrictEqual(bar)
             })
             it('Reacts to a stored value change', async () => {
-                VueValuesStore.removeAll()
+                Store.removeAll()
                 const { getAttrs } = getUtilities({ initialValue: foo })
                 expect(getAttrs().value).toStrictEqual(foo)
-                VueValuesStore.value(uid).set(bar)
+                Store.value(uid).set(bar)
                 await nextTick()
                 expect(getAttrs().value).toStrictEqual(bar)
             })
         }
         it('Set is ignored when disabled', async () => {
-            VueValuesStore.removeAll()
+            Store.removeAll()
             const { getAttrs } = getUtilities({ disabled: true })
             expect(getAttrs().value).toStrictEqual(emptyValue)
             getAttrs().set(foo)
@@ -257,6 +258,7 @@ testGeneralValue({
     component: BooleanValue,
     storedComponent: StoredBooleanValue,
     componentName: 'BooleanValue',
+    emptyValue: false,
     foo: false,
     bar: true,
 })
@@ -316,12 +318,12 @@ describe('StoredValue with uid prepared for nested objects', () => {
     const uid = `${uid1}.${uid2}`
 
     it('Get and Set work correctly', async () => {
-        VueValuesStore.removeAll()
+        Store.removeAll()
         const { getAttrs } = getUtilities({ uid })
         expect(getAttrs().value).toStrictEqual(emptyValue)
         getAttrs().set(foo)
         await nextTick()
-        expect(VueValuesStore.state[uid1][uid2]).toStrictEqual(foo)
+        expect(Store.state[uid1][uid2]).toStrictEqual(foo)
         expect(getAttrs().value).toStrictEqual(foo)
     })
 })

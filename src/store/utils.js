@@ -1,10 +1,9 @@
+import { existsFieldInObject } from '../utils'
+
 export function isObject (obj) {
     return typeof obj === 'object' && obj !== null
 }
 
-function existsFieldInObject (obj, fieldName) {
-    return Object.prototype.hasOwnProperty.call(obj, fieldName)
-}
 export function existsPathInObject (obj, path) {
     const section = path.split('.')
     let node = obj

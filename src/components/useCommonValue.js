@@ -4,11 +4,9 @@ export function propsForValueType (valueType) {
     return {
         defaultValue: {
             type: valueType,
-            default: undefined,
         },
         initialValue: {
             type: valueType,
-            default: undefined,
         },
         disabled: {
             type: Boolean,

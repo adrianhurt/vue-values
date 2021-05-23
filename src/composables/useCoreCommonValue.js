@@ -1,6 +1,6 @@
-export default function useCoreCommonValue (reactiveValue, { reactiveDisabled = false, emptyValue } = {}) {
+export default function useCoreCommonValue (reactiveValue, { disabled = false, emptyValue } = {}) {
     const set = (newValue) => {
-        if (newValue !== reactiveValue.value && !reactiveDisabled) {
+        if (newValue !== reactiveValue.value && !disabled) {
             // eslint-disable-next-line no-param-reassign
             reactiveValue.value = newValue
         }

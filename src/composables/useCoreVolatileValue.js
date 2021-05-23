@@ -1,27 +1,28 @@
 /* eslint-disable import/prefer-default-export */
 import { reactive } from 'vue'
 import useCoreCommonValue from './useCoreCommonValue'
-import { firstDefined } from '../utils'
+import { firstDefined } from './utils'
 
-export default function useCoreVolatileValue ({
-    initialValue, defaultValue, reactiveDisabled = false, emptyValue,
-} = {}) {
+export default function useCoreVolatileValue (options = {}) {
+    const { disabled = false, emptyValue } = options
+
+    const defaultValue = firstDefined(options, 'defaultValue', 'emptyValue')
+    const initialValue = firstDefined(options, 'initialValue', 'emptyValue')
+    const defaultOrInitialValue = firstDefined(options, 'defaultValue', 'initialValue', 'emptyValue')
+    const initialOrDefaultValue = firstDefined(options, 'initialValue', 'defaultValue', 'emptyValue')
+
     const reactiveValue = reactive({
-        value: firstDefined(initialValue, defaultValue, emptyValue),
+        value: initialOrDefaultValue,
     })
 
-    const { set, clear } = useCoreCommonValue(reactiveValue, { reactiveDisabled, emptyValue })
-
-    const resetToDefault = () => set(firstDefined(defaultValue, emptyValue))
-    const resetToInitial = () => set(firstDefined(initialValue, emptyValue))
-    const reset = () => set(firstDefined(defaultValue, initialValue, emptyValue))
+    const { set, clear } = useCoreCommonValue(reactiveValue, { disabled, emptyValue })
 
     return {
         value: reactiveValue,
         set,
         clear,
-        resetToDefault,
-        resetToInitial,
-        reset,
+        resetToDefault: () => set(defaultValue),
+        resetToInitial: () => set(initialValue),
+        reset: () => set(defaultOrInitialValue),
     }
 }

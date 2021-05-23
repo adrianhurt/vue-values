@@ -5,11 +5,6 @@ export default function useVolatileValue (props, context, { emptyValue = undefin
     return useCommonValue(
         props,
         context,
-        useCoreVolatileValue({
-            initialValue: props.initialValue,
-            defaultValue: props.defaultValue,
-            reactiveDisabled: props.disabled,
-            emptyValue,
-        }),
+        useCoreVolatileValue({ ...props, emptyValue }),
     )
 }

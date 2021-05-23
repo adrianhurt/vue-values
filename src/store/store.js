@@ -81,16 +81,16 @@ function setDefaultState (newDefaultState) {
 function setDefaultValue (uid, newValue) {
     return setValueIntoObject(uid, defaultState, newValue)
 }
-function getDefaultValue (uid) {
-    return getValueFromObject(uid, defaultState)
+function getDefaultValue (uid, defaultValue) {
+    return getValueFromObject(uid, defaultState, { defaultValue })
 }
 
 function removeDefaultValue (uid) {
     return removeValueFromObject(uid, defaultState)
 }
 
-function resetToDefault (uid) {
-    set(uid, getDefaultValue(uid))
+function resetToDefault (uid, defaultValue) {
+    set(uid, getDefaultValue(uid, defaultValue))
 }
 
 function resetAllToDefault () {
@@ -107,16 +107,16 @@ function setInitialState (newInitialState) {
 function setInitialValue (uid, newValue) {
     return setValueIntoObject(uid, initialState, newValue)
 }
-function getInitialValue (uid) {
-    return getValueFromObject(uid, initialState)
+function getInitialValue (uid, defaultValue) {
+    return getValueFromObject(uid, initialState, { defaultValue })
 }
 
 function removeInitialValue (uid) {
     return removeValueFromObject(uid, initialState)
 }
 
-function resetToInitial (uid) {
-    set(uid, getInitialValue(uid))
+function resetToInitial (uid, defaultValue) {
+    set(uid, getInitialValue(uid, defaultValue))
 }
 
 function resetAllToInitial () {
@@ -125,8 +125,14 @@ function resetAllToInitial () {
 
 // //////////////////////////
 // General reset (default or initial)
-function reset (uid) {
-    set(uid, existsPathInObject(defaultState, uid) ? getDefaultValue(uid) : getInitialValue(uid))
+function reset (uid, defaultValue) {
+    if (existsPathInObject(defaultState, uid)) {
+        set(uid, getDefaultValue(uid))
+    } else if (existsPathInObject(initialState, uid)) {
+        set(uid, getInitialValue(uid))
+    } else {
+        set(uid, defaultValue)
+    }
 }
 
 // //////////////////////////
