@@ -3,13 +3,13 @@ import { reactive } from 'vue'
 import useCoreCommonValue from './useCoreCommonValue'
 import { firstDefined } from './utils'
 
-export default function useCoreVolatileValue (options = {}) {
-    const { disabled = false, emptyValue } = options
+export default function useCoreVolatileValue (emptyValue, options = {}) {
+    const { disabled = false } = options
 
-    const defaultValue = firstDefined(options, 'defaultValue', 'emptyValue')
-    const initialValue = firstDefined(options, 'initialValue', 'emptyValue')
-    const defaultOrInitialValue = firstDefined(options, 'defaultValue', 'initialValue', 'emptyValue')
-    const initialOrDefaultValue = firstDefined(options, 'initialValue', 'defaultValue', 'emptyValue')
+    const defaultValue = firstDefined(emptyValue, options, 'defaultValue')
+    const initialValue = firstDefined(emptyValue, options, 'initialValue')
+    const defaultOrInitialValue = firstDefined(emptyValue, options, 'defaultValue', 'initialValue')
+    const initialOrDefaultValue = firstDefined(emptyValue, options, 'initialValue', 'defaultValue')
 
     const reactiveValue = reactive({
         value: initialOrDefaultValue,

@@ -1,34 +1,43 @@
-/* eslint-disable import/prefer-default-export */
+import { computed } from 'vue'
 import useCoreVolatileValue from './useCoreVolatileValue'
 import useCoreStoredValue from './useCoreStoredValue'
 
-function addFunctions (valueFunctions = {}) {
-    return (valueArgs) => {
-        const totalArgs = { ...valueArgs }
-        Object.keys(valueFunctions).forEach((key) => {
-            totalArgs[key] = (...args) => valueArgs.set(valueFunctions[key](valueArgs.value.value, ...args))
-        })
-        return totalArgs
+function customize ({
+    useCoreValueFn,
+    options = {},
+    emptyValue = undefined,
+    customSetter = undefined,
+    customMutator = {},
+    customFunction = {},
+    customComputed = {},
+}) {
+    const valueArgs = useCoreValueFn(emptyValue, options)
+    if (customSetter) {
+        const { set: originalSet } = valueArgs
+        valueArgs.set = (newValue) => originalSet(customSetter(options)(newValue))
     }
-}
-function combine (valueResult, ...fns) {
-    return fns.reduce((result, fn) => ({ ...result, ...fn(result) }), valueResult)
+    Object.keys(customFunction).forEach((key) => {
+        valueArgs[key] = (...args) => customFunction[key](valueArgs.value.value, options)(...args)
+    })
+    Object.keys(customMutator).forEach((key) => {
+        valueArgs[key] = (...args) => valueArgs.set(customMutator[key](valueArgs.value.value, options)(...args))
+    })
+    Object.keys(customComputed).forEach((key) => {
+        valueArgs[key] = computed(() => customComputed[key](valueArgs.value.value, options))
+    })
+    return valueArgs
 }
 
-export function bothComposableGenerator ({
-    useValueFns,
-    emptyValue = undefined,
-    valueFunctions = {},
-} = {}) {
-    const volatile = (options = {}) => combine(
-        useCoreVolatileValue({ ...options, emptyValue }),
-        ...useValueFns.map((fn) => fn(options)),
-        addFunctions(valueFunctions),
-    )
-    const stored = (uid, options = {}) => combine(
-        useCoreStoredValue(uid, { ...options, emptyValue }),
-        ...useValueFns.map((fn) => fn(options)),
-        addFunctions(valueFunctions),
-    )
-    return { volatile, stored }
+export function volatileComposableGenerator (composableOptions = {}) {
+    return (options = {}) => customize({ useCoreValueFn: useCoreVolatileValue, options, ...composableOptions })
+}
+export function storedComposableGenerator (composableOptions = {}) {
+    return (uid, options = {}) => customize({ useCoreValueFn: (...args) => useCoreStoredValue(uid, ...args), options, ...composableOptions })
+}
+
+export function bothComposableGenerator (composableOptions = {}) {
+    return {
+        volatile: volatileComposableGenerator(composableOptions),
+        stored: storedComposableGenerator(composableOptions),
+    }
 }

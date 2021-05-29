@@ -1,5 +1,3 @@
-import useCoreNumberValueFactory from './useCoreNumberValueFactory'
-import useCoreArrayValueFactory from './useCoreArrayValueFactory'
 import ValueFunctions from '../valueFunctions/valueFunctions'
 import { bothComposableGenerator } from './composableGenerator'
 
@@ -7,35 +5,38 @@ export const { volatile: useVueValue, stored: useVueStoredValue } = bothComposab
 
 export const { volatile: useVueBoolean, stored: useVueStoredBoolean } = bothComposableGenerator({
     emptyValue: false,
-    valueFunctions: ValueFunctions.boolean,
+    customMutator: ValueFunctions.boolean.mutator,
+    customComputed: ValueFunctions.boolean.computed,
 })
 
 export const { volatile: useVueNumber, stored: useVueStoredNumber } = bothComposableGenerator({
-    useValueFns: [useCoreNumberValueFactory],
-    valueFunctions: ValueFunctions.number,
-})
-
-export const { volatile: useVueArray, stored: useVueStoredArray } = bothComposableGenerator({
-    useValueFns: [useCoreArrayValueFactory],
-    emptyValue: [],
-    valueFunctions: ValueFunctions.array,
+    customSetter: ValueFunctions.number.setter,
+    customMutator: ValueFunctions.number.mutator,
+    customComputed: ValueFunctions.number.computed,
 })
 
 export const { volatile: useVueString, stored: useVueStoredString } = bothComposableGenerator({
-    valueFunctions: ValueFunctions.string,
+    customMutator: ValueFunctions.string.mutator,
+    customFunction: ValueFunctions.string.function,
 })
 
-export const { volatile: useVueSet, stored: useVueStoredSet } = bothComposableGenerator({
-    emptyValue: new Set(),
-    valueFunctions: ValueFunctions.set,
+export const { volatile: useVueArray, stored: useVueStoredArray } = bothComposableGenerator({
+    emptyValue: [],
+    customMutator: ValueFunctions.array.mutator,
+    customFunction: ValueFunctions.array.function,
 })
 
 export const { volatile: useVueObject, stored: useVueStoredObject } = bothComposableGenerator({
     emptyValue: {},
-    valueFunctions: ValueFunctions.object,
+    customMutator: ValueFunctions.object.mutator,
+})
+
+export const { volatile: useVueSet, stored: useVueStoredSet } = bothComposableGenerator({
+    emptyValue: new Set(),
+    customMutator: ValueFunctions.set.mutator,
 })
 
 export const { volatile: useVueMap, stored: useVueStoredMap } = bothComposableGenerator({
     emptyValue: new Map(),
-    valueFunctions: ValueFunctions.map,
+    customMutator: ValueFunctions.map.mutator,
 })

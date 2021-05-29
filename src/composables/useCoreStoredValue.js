@@ -5,10 +5,10 @@ import Store from '../store/store'
 import { firstDefined } from './utils'
 import { existsFieldInObject } from '../utils'
 
-export default function useCoreStoredValue (uid, options = {}) {
-    const { disabled = false, emptyValue } = options
+export default function useCoreStoredValue (uid, emptyValue, options = {}) {
+    const { disabled = false } = options
 
-    const initialOrDefaultValue = firstDefined(options, 'initialValue', 'defaultValue', 'emptyValue')
+    const initialOrDefaultValue = firstDefined(emptyValue, options, 'initialValue', 'defaultValue')
 
     const reactiveValue = computed({
         get: () => Store.value(uid).get(initialOrDefaultValue),

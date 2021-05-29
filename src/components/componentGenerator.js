@@ -1,69 +1,79 @@
-import { propsForValueType, emits } from './useCommonValue'
-import useVolatileValue from './useVolatileValue'
-import useStoredValue, { storedValueProps } from './useStoredValue'
+import { watch } from 'vue'
+import { volatileComposableGenerator, storedComposableGenerator } from '../composables/composableGenerator'
 
 export function singleComponentGenerator ({
     name,
     useValueFn,
     valueType,
-    emptyValue = undefined,
-    valueFunctions = {},
+    customComputed = {},
     extraProps = {},
     extraEmits = [],
 }) {
     return {
         name,
         props: {
-            ...propsForValueType(valueType),
+            defaultValue: {
+                type: valueType,
+            },
+            initialValue: {
+                type: valueType,
+            },
+            disabled: {
+                type: Boolean,
+                default: false,
+            },
             ...extraProps,
         },
-        emits: [...emits, ...extraEmits],
+        emits: [
+            'change',
+            ...extraEmits,
+        ],
         setup (props, context) {
-            const { reactives, functions: { set }, scopedProps } = useValueFn(props, context, { emptyValue })
-            const { value } = reactives
+            const valueArgs = useValueFn(props)
+            const { value, ...valueFunctionsOrComputed } = valueArgs
 
-            const scopedValueFunctions = {}
-            Object.keys(valueFunctions).forEach((key) => {
-                scopedValueFunctions[key] = (...args) => set(valueFunctions[key](value.value, ...args))
+            watch(() => value.value, (newValue, oldValue) => {
+                context.emit('change', newValue, oldValue)
             })
 
             return () => {
-                const scoped = { ...scopedProps, ...scopedValueFunctions }
-                Object.keys(reactives).forEach((key) => {
-                    scoped[key] = reactives[key].value
+                const scoped = { value: value.value }
+                Object.keys(valueFunctionsOrComputed).forEach((key) => {
+                    if (customComputed[key]) {
+                        scoped[key] = valueFunctionsOrComputed[key].value
+                    } else {
+                        scoped[key] = valueFunctionsOrComputed[key]
+                    }
                 })
                 return context.slots.default(scoped)
             }
         },
     }
 }
+export function volatileComponentGenerator (componentOptions) {
+    const useValueFn = volatileComposableGenerator(componentOptions)
+    return singleComponentGenerator({
+        useValueFn,
+        ...componentOptions,
+    })
+}
+export function storedComponentGenerator (componentOptions) {
+    const useValueFn = storedComposableGenerator(componentOptions)
+    return singleComponentGenerator({
+        useValueFn: (props) => useValueFn(props.uid, props),
+        ...componentOptions,
+        extraProps: {
+            ...(componentOptions.extraProps || {}),
+            uid: {
+                type: String,
+                required: true,
+            },
+        },
+    })
+}
 
-export function bothComponentGenerator ({
-    name,
-    useValueWrapperFn,
-    valueType,
-    emptyValue = undefined,
-    valueFunctions = {},
-    extraProps = {},
-    extraEmits = [],
-}) {
-    const volatile = singleComponentGenerator({
-        name,
-        useValueFn: useValueWrapperFn ? useValueWrapperFn(useVolatileValue) : useVolatileValue,
-        valueType,
-        emptyValue,
-        valueFunctions,
-        extraProps,
-        extraEmits,
-    })
-    const stored = singleComponentGenerator({
-        name: `Stored${name}`,
-        useValueFn: useValueWrapperFn ? useValueWrapperFn(useStoredValue) : useStoredValue,
-        valueType,
-        emptyValue,
-        valueFunctions,
-        extraProps: { ...storedValueProps, ...extraProps },
-        extraEmits,
-    })
+export function bothComponentGenerator (componentOptions) {
+    const volatile = volatileComponentGenerator(componentOptions)
+    const stored = storedComponentGenerator({ name: `Stored${componentOptions.name}`, ...componentOptions })
     return { volatile, stored }
 }

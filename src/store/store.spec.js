@@ -4,7 +4,6 @@ beforeEach(() => {
     Store.removeAll()
     Store.setDefaultState()
     Store.setInitialState()
-    Store.setUpdatingHandlers()
 })
 
 describe('store', () => {
@@ -136,22 +135,22 @@ describe('store', () => {
         expect(Store.state.myValue2).toBe('bar')
     })
 
-    it('setUpdatingHandlers: afterSet, afterDelete and afterUpdate are called', () => {
-        const afterSet = jest.fn()
-        const afterDelete = jest.fn()
-        const afterUpdate = jest.fn()
-        Store.setDefaultState({ myValue: 'bar' })
-        Store.setUpdatingHandlers({ afterSet, afterDelete, afterUpdate })
-        Store.value('myValue').set('foo')
-        expect(afterSet).toHaveBeenCalledWith('myValue', 'foo')
-        expect(afterUpdate).toHaveBeenCalledWith({ myValue: 'foo' })
-        Store.value('myValue').resetToDefault()
-        expect(afterSet).toHaveBeenCalledWith('myValue', 'bar')
-        expect(afterUpdate).toHaveBeenCalledWith({ myValue: 'bar' })
-        Store.value('myValue').remove()
-        expect(afterDelete).toHaveBeenCalledWith('myValue')
-        expect(afterUpdate).toHaveBeenCalledWith({})
-    })
+    // it('setUpdatingHandlers: afterSet, afterDelete and afterUpdate are called', () => {
+    //     const afterSet = jest.fn()
+    //     const afterDelete = jest.fn()
+    //     const afterUpdate = jest.fn()
+    //     Store.setDefaultState({ myValue: 'bar' })
+    //     Store.setUpdatingHandlers({ afterSet, afterDelete, afterUpdate })
+    //     Store.value('myValue').set('foo')
+    //     expect(afterSet).toHaveBeenCalledWith('myValue', 'foo')
+    //     expect(afterUpdate).toHaveBeenCalledWith({ myValue: 'foo' })
+    //     Store.value('myValue').resetToDefault()
+    //     expect(afterSet).toHaveBeenCalledWith('myValue', 'bar')
+    //     expect(afterUpdate).toHaveBeenCalledWith({ myValue: 'bar' })
+    //     Store.value('myValue').remove()
+    //     expect(afterDelete).toHaveBeenCalledWith('myValue')
+    //     expect(afterUpdate).toHaveBeenCalledWith({})
+    // })
 
     it('boolean.toogle', () => {
         Store.value('myValue').set(false)
@@ -177,15 +176,15 @@ describe('store', () => {
         Store.array('myValue').append('bar')
         expect(Store.state.myValue).toStrictEqual(['foo', 'bar'])
     })
-    it('set.add', () => {
-        Store.value('myValue').set(new Set(['foo']))
-        Store.set('myValue').add('bar')
-        expect(Store.state.myValue).toStrictEqual(new Set(['foo', 'bar']))
-    })
     it('object.setValue', () => {
         Store.value('myValue').set({ foo: 1 })
         Store.object('myValue').setValue('bar', 2)
         expect(Store.state.myValue).toStrictEqual({ foo: 1, bar: 2 })
+    })
+    it('set.add', () => {
+        Store.value('myValue').set(new Set(['foo']))
+        Store.set('myValue').add('bar')
+        expect(Store.state.myValue).toStrictEqual(new Set(['foo', 'bar']))
     })
     it('map.setValue', () => {
         Store.value('myValue').set(new Map([['foo', 1]]))

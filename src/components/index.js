@@ -1,62 +1,72 @@
 import ValueFunctions from '../valueFunctions/valueFunctions'
 import { bothComponentGenerator } from './componentGenerator'
-import useNumberValue, { numberProps } from './useNumberValue'
-import useArrayValue from './useArrayValue'
 
 export const { volatile: Value, stored: StoredValue } = bothComponentGenerator({
     name: 'Value',
     valueType: undefined,
     emptyValue: undefined,
+    customSetter: undefined,
+    customMutator: {},
+    customFunction: {},
+    customComputed: {},
+    extraProps: {},
+    extraEmits: [],
 })
 
 export const { volatile: BooleanValue, stored: StoredBooleanValue } = bothComponentGenerator({
     name: 'BooleanValue',
     valueType: Boolean,
     emptyValue: false,
-    valueFunctions: ValueFunctions.boolean,
+    customMutator: ValueFunctions.boolean.mutator,
+    customComputed: ValueFunctions.boolean.computed,
 })
 
 export const { volatile: NumberValue, stored: StoredNumberValue } = bothComponentGenerator({
     name: 'NumberValue',
-    useValueWrapperFn: useNumberValue,
     valueType: Number,
     emptyValue: undefined,
-    valueFunctions: ValueFunctions.number,
-    extraProps: numberProps,
-})
-
-export const { volatile: ArrayValue, stored: StoredArrayValue } = bothComponentGenerator({
-    name: 'ArrayValue',
-    useValueWrapperFn: useArrayValue,
-    valueType: Array,
-    emptyValue: [],
-    valueFunctions: ValueFunctions.array,
+    customSetter: ValueFunctions.number.setter,
+    customMutator: ValueFunctions.number.mutator,
+    customComputed: ValueFunctions.number.computed,
+    extraProps: {
+        min: Number,
+        max: Number,
+    },
 })
 
 export const { volatile: StringValue, stored: StoredStringValue } = bothComponentGenerator({
     name: 'StringValue',
     valueType: String,
     emptyValue: undefined,
-    valueFunctions: ValueFunctions.string,
+    customMutator: ValueFunctions.string.mutator,
+    customFunction: ValueFunctions.string.function,
 })
 
-export const { volatile: SetValue, stored: StoredSetValue } = bothComponentGenerator({
-    name: 'SetValue',
-    valueType: Set,
-    emptyValue: new Set(),
-    valueFunctions: ValueFunctions.set,
+export const { volatile: ArrayValue, stored: StoredArrayValue } = bothComponentGenerator({
+    name: 'ArrayValue',
+    valueType: Array,
+    emptyValue: [],
+    customMutator: ValueFunctions.array.mutator,
+    customFunction: ValueFunctions.array.function,
 })
 
 export const { volatile: ObjectValue, stored: StoredObjectValue } = bothComponentGenerator({
     name: 'ObjectValue',
     valueType: Object,
     emptyValue: {},
-    valueFunctions: ValueFunctions.object,
+    customMutator: ValueFunctions.object.mutator,
+})
+
+export const { volatile: SetValue, stored: StoredSetValue } = bothComponentGenerator({
+    name: 'SetValue',
+    valueType: Set,
+    emptyValue: new Set(),
+    customMutator: ValueFunctions.set.mutator,
 })
 
 export const { volatile: MapValue, stored: StoredMapValue } = bothComponentGenerator({
     name: 'MapValue',
     valueType: Map,
     emptyValue: new Map(),
-    valueFunctions: ValueFunctions.map,
+    customMutator: ValueFunctions.map.mutator,
 })

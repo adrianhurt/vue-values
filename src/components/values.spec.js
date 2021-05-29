@@ -285,20 +285,20 @@ testGeneralValue({
     bar: [3, 4],
 })
 testGeneralValue({
-    component: SetValue,
-    storedComponent: StoredSetValue,
-    componentName: 'SetValue',
-    emptyValue: new Set(),
-    foo: new Set([1, 2]),
-    bar: new Set([3, 4]),
-})
-testGeneralValue({
     component: ObjectValue,
     storedComponent: StoredObjectValue,
     componentName: 'ObjectValue',
     emptyValue: {},
     foo: { one: 1, two: 2 },
     bar: { three: 3, four: 4 },
+})
+testGeneralValue({
+    component: SetValue,
+    storedComponent: StoredSetValue,
+    componentName: 'SetValue',
+    emptyValue: new Set(),
+    foo: new Set([1, 2]),
+    bar: new Set([3, 4]),
 })
 testGeneralValue({
     component: MapValue,
@@ -365,11 +365,11 @@ describe('ArrayValue (specific)', () => {
 
     it('First works correctly', async () => {
         const { getAttrs } = getUtilities({ initialValue: [1, 2, 3] })
-        expect(getAttrs().first).toStrictEqual(1)
+        expect(getAttrs().first()).toStrictEqual(1)
     })
     it('Last works correctly', async () => {
         const { getAttrs } = getUtilities({ initialValue: [1, 2, 3] })
-        expect(getAttrs().last).toStrictEqual(3)
+        expect(getAttrs().last()).toStrictEqual(3)
     })
 })
 
@@ -408,19 +408,19 @@ describe('Value helpers', () => {
         await nextTick()
         expect(getAttrs().value).toStrictEqual(['foo', 'bar'])
     })
-    it('SetValue.add', async () => {
-        const { getAttrs } = getWrapperUtilities(SetValue, { initialValue: new Set(['foo']) })
-        expect(getAttrs().value).toStrictEqual(new Set(['foo']))
-        getAttrs().add('bar')
-        await nextTick()
-        expect(getAttrs().value).toStrictEqual(new Set(['foo', 'bar']))
-    })
     it('ObjectValue.setValue', async () => {
         const { getAttrs } = getWrapperUtilities(ObjectValue, { initialValue: { foo: 1 } })
         expect(getAttrs().value).toStrictEqual({ foo: 1 })
         getAttrs().setValue('bar', 2)
         await nextTick()
         expect(getAttrs().value).toStrictEqual({ foo: 1, bar: 2 })
+    })
+    it('SetValue.add', async () => {
+        const { getAttrs } = getWrapperUtilities(SetValue, { initialValue: new Set(['foo']) })
+        expect(getAttrs().value).toStrictEqual(new Set(['foo']))
+        getAttrs().add('bar')
+        await nextTick()
+        expect(getAttrs().value).toStrictEqual(new Set(['foo', 'bar']))
     })
     it('MapValue.setValue', async () => {
         const { getAttrs } = getWrapperUtilities(MapValue, { initialValue: new Map([['foo', 1]]) })

@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { addListener, removeListener, toEveryListener } from './listeners'
 import ValueFunctions from '../valueFunctions/valueFunctions'
 import {
     existsPathInObject,
@@ -13,17 +14,15 @@ const state = reactive({})
 let defaultState = {}
 let initialState = {}
 
-let afterSet
-let afterDelete
-let afterUpdate
-
 /**
  * Deletes a stored value
 */
 function remove (uid, { notify = true } = {}) {
     const result = removeValueFromObject(uid, state)
-    if (notify) afterDelete?.(uid)
-    if (notify) afterUpdate?.(state)
+    if (notify) {
+        toEveryListener('onDeleteValue', uid, state)
+        toEveryListener('onUpdateState', state)
+    }
     return result
 }
 /**
@@ -33,7 +32,7 @@ function removeAll ({ notify = true } = {}) {
     Object.keys(state).forEach((key) => {
         remove(key, { notify: false })
     })
-    if (notify) afterUpdate?.(state)
+    if (notify) toEveryListener('onUpdateState', state)
 }
 
 /**
@@ -41,7 +40,7 @@ function removeAll ({ notify = true } = {}) {
 */
 function mergeState (newState, { notify = true } = {}) {
     deepMerge(state, newState)
-    if (notify) afterUpdate?.(state)
+    if (notify) toEveryListener('onUpdateState', state)
     return state
 }
 
@@ -51,7 +50,7 @@ function mergeState (newState, { notify = true } = {}) {
 function setState (newState, { notify = true } = {}) {
     removeAll({ notify: false })
     mergeState(newState, { notify: false })
-    if (notify) afterUpdate?.(state)
+    if (notify) toEveryListener('onUpdateState', state)
 }
 
 /**
@@ -59,8 +58,10 @@ function setState (newState, { notify = true } = {}) {
 */
 function set (uid, newValue, { notify = true } = {}) {
     const result = setValueIntoObject(uid, state, newValue)
-    if (notify) afterSet?.(uid, newValue)
-    if (notify) afterUpdate?.(state)
+    if (notify) {
+        toEveryListener('onSetValue', uid, newValue, state)
+        toEveryListener('onUpdateState', state)
+    }
     return result
 }
 
@@ -136,32 +137,36 @@ function reset (uid, defaultValue) {
 }
 
 // //////////////////////////
-// Set update handlers
-
-function setUpdatingHandlers (options = {}) {
-    afterSet = options.afterSet
-    afterDelete = options.afterDelete
-    afterUpdate = options.afterUpdate
-}
-
-// //////////////////////////
 // Auxiliar functions
 
 function valueAs (type) {
     return (uid) => {
         const applyToUid = (fn) => (...args) => fn(uid, ...args)
-        const functionsDeclarations = type && type !== 'value' ? ValueFunctions[type] : {}
+
+        const setter = type && type !== 'value' && ValueFunctions[type].setter
+            ? (newValue, options) => applyToUid(set)(ValueFunctions[type].setter(options)(newValue))
+            : applyToUid(set)
+
+        const customFunction = (type && type !== 'value' && ValueFunctions[type].function) || {}
+        const customMutator = (type && type !== 'value' && ValueFunctions[type].mutator) || {}
         return {
             get: applyToUid(get),
-            set: applyToUid(set),
+            set: setter,
             resetToDefault: applyToUid(resetToDefault),
             resetToInitial: applyToUid(resetToInitial),
             reset: applyToUid(reset),
             remove: applyToUid(remove),
-            ...Object.keys(functionsDeclarations).reduce(
+            ...Object.keys(customFunction).reduce(
                 (acc, key) => ({
                     ...acc,
-                    [key]: (...args) => set(uid, functionsDeclarations[key](get(uid), ...args)),
+                    [key]: (...args) => customFunction[key](get(uid))(...args),
+                }),
+                {},
+            ),
+            ...Object.keys(customMutator).reduce(
+                (acc, key) => ({
+                    ...acc,
+                    [key]: (...args) => setter(customMutator[key](get(uid))(...args)),
                 }),
                 {},
             ),
@@ -189,14 +194,15 @@ export default {
     getInitialValue,
     removeInitialValue,
     resetAllToInitial,
-    setUpdatingHandlers,
     removeAll,
+    addListener,
+    removeListener,
     value: valueAs('value'),
     boolean: valueAs('boolean'),
     number: valueAs('number'),
     string: valueAs('string'),
     array: valueAs('array'),
-    set: valueAs('set'),
     object: valueAs('object'),
+    set: valueAs('set'),
     map: valueAs('map'),
 }
