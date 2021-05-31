@@ -1,6 +1,6 @@
 {
     "name": "vue-values",
-    "version": "1.0.0-alpha.0",
+    "version": "1.0.0-alpha.1",
     "description": "A set of simple composable functions and components to handle simple values.",
     "author": "adrianhurt",
     "license": "MIT",
