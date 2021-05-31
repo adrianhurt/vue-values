@@ -1,7 +1,7 @@
 {
     "name": "vue-values",
-    "version": "0.1.0",
-    "description": "A set of simple components to handle simple values.",
+    "version": "1.0.0-alpha.0",
+    "description": "A set of simple composable functions and components to handle simple values.",
     "author": "adrianhurt",
     "license": "MIT",
     "keywords": [
@@ -9,6 +9,9 @@
         "vuejs",
         "value",
         "values",
+        "use",
+        "composables",
+        "hooks",
         "handler",
         "store",
         "stored",
