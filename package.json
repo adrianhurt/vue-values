@@ -1,6 +1,6 @@
 {
     "name": "vue-values",
-    "version": "1.0.0-alpha.1",
+    "version": "1.0.0-alpha.2",
     "description": "A set of simple composable functions and components to handle simple values.",
     "author": "adrianhurt",
     "license": "MIT",
@@ -43,12 +43,15 @@
     "files": [
         "dist"
     ],
-    "dependencies": {
+    "peerDependencies": {
         "core-js": "^3.12.0",
-        "uuid": "^8.3.2",
+        "uuid": "^8.0.0",
         "vue": "^3.0.11"
     },
     "devDependencies": {
+        "core-js": "^3.12.0",
+        "uuid": "^8.3.2",
+        "vue": "^3.0.11",
         "@commitlint/cli": "^8.3.5",
         "@commitlint/config-conventional": "^8.3.4",
         "@vue/babel-preset-app": "^4.5.12",
