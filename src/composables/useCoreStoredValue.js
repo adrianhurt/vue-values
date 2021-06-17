@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { computed } from 'vue'
+import { customRef } from 'vue'
 import useCoreCommonValue from './useCoreCommonValue'
 import Store from '../store/store'
 import { firstDefined } from './utils'
@@ -10,12 +10,19 @@ export default function useCoreStoredValue (uid, emptyValue, options = {}) {
 
     const initialOrDefaultValue = firstDefined(emptyValue, options, 'initialValue', 'defaultValue')
 
-    const reactiveValue = computed({
-        get: () => Store.value(uid).get(initialOrDefaultValue),
-        set: (newValue) => Store.value(uid).set(newValue),
-    })
+    const refValue = customRef((track, trigger) => ({
+        get () {
+            const v = Store.value(uid).get(initialOrDefaultValue)
+            track()
+            return v
+        },
+        set (newValue) {
+            Store.value(uid).set(newValue)
+            trigger()
+        },
+    }))
 
-    const { set, clear } = useCoreCommonValue(reactiveValue, { disabled, emptyValue })
+    const { set, clear } = useCoreCommonValue(refValue, { disabled, emptyValue })
 
     const resetToDefault = () => {
         if (existsFieldInObject(options, 'defaultValue')) {
@@ -42,7 +49,7 @@ export default function useCoreStoredValue (uid, emptyValue, options = {}) {
     }
 
     return {
-        value: reactiveValue,
+        value: refValue,
         set,
         clear,
         resetToDefault,
