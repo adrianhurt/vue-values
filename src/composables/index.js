@@ -1,5 +1,10 @@
 import ValueFunctions from '../valueFunctions/valueFunctions'
+import { useCoreSimpleVolatileValue } from './useCoreVolatileValue'
+import { useCoreSimpleStoredValue } from './useCoreStoredValue'
 import { bothComposableGenerator } from './composableGenerator'
+
+export const useValue = (options = {}) => useCoreSimpleVolatileValue(undefined, options)
+export const useStoredValue = (uid, options = {}) => useCoreSimpleStoredValue(uid, undefined, options)
 
 export const { volatile: useVueValue, stored: useVueStoredValue } = bothComposableGenerator()
 

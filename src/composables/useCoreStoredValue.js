@@ -5,12 +5,9 @@ import Store from '../store/store'
 import { firstDefined } from './utils'
 import { existsFieldInObject } from '../utils'
 
-export default function useCoreStoredValue (uid, emptyValue, options = {}) {
-    const { disabled = false } = options
-
+export function useCoreSimpleStoredValue (uid, emptyValue, options = {}) {
     const initialOrDefaultValue = firstDefined(emptyValue, options, 'initialValue', 'defaultValue')
-
-    const refValue = customRef((track, trigger) => ({
+    return customRef((track, trigger) => ({
         get () {
             const v = Store.value(uid).get(initialOrDefaultValue)
             track()
@@ -21,6 +18,12 @@ export default function useCoreStoredValue (uid, emptyValue, options = {}) {
             trigger()
         },
     }))
+}
+
+export default function useCoreStoredValue (uid, emptyValue, options = {}) {
+    const { disabled = false } = options
+
+    const refValue = useCoreSimpleStoredValue(uid, emptyValue, options)
 
     const { set, clear } = useCoreCommonValue(refValue, { disabled, emptyValue })
 
